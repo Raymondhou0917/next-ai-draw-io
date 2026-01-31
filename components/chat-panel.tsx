@@ -41,6 +41,7 @@ import type { UrlData } from "@/lib/url-utils"
 import { type FileData, useFileProcessor } from "@/lib/use-file-processor"
 import { useQuotaManager } from "@/lib/use-quota-manager"
 import { cn, formatXML, isRealDiagram } from "@/lib/utils"
+import { BrandFooter } from "./brand-footer"
 import type { ValidationState } from "./chat/ValidationCard"
 import { ChatMessageDisplay } from "./chat-message-display"
 import { DevXmlSimulator } from "./dev-xml-simulator"
@@ -1426,6 +1427,9 @@ export default function ChatPanel({
                     onFocused={() => setShouldFocusInput(false)}
                 />
             </footer>
+
+            {/* Brand Footer - 雷蒙三十品牌標識 */}
+            <BrandFooter />
 
             <SettingsDialog
                 open={showSettingsDialog}

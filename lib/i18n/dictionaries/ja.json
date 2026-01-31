@@ -342,5 +342,9 @@
         "allModelsShown": "すべてのモデルを表示（未検証を含む）",
         "unvalidatedModelWarning": "このモデルは検証されていません",
         "serverDefaultModel": "サーバーデフォルトモデル"
+    },
+    "brand": {
+        "allTools": "すべてのツール",
+        "raymond": "Raymond30"
     }
 }

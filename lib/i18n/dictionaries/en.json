@@ -342,5 +342,9 @@
         "allModelsShown": "All models are shown (including unvalidated)",
         "unvalidatedModelWarning": "This model has not been validated",
         "serverDefaultModel": "Server default model"
+    },
+    "brand": {
+        "allTools": "All Tools",
+        "raymond": "Raymond30"
     }
 }

@@ -342,5 +342,9 @@
         "allModelsShown": "显示所有模型（包括未验证的）",
         "unvalidatedModelWarning": "此模型尚未验证",
         "serverDefaultModel": "服务器默认模型"
+    },
+    "brand": {
+        "allTools": "所有工具",
+        "raymond": "雷蒙三十"
     }
 }
