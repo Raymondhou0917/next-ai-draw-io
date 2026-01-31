@@ -1,8 +1,8 @@
 "use client"
 
 import { Clock, Key, Sparkles } from "lucide-react"
+import { useLocalQuota } from "@/contexts/local-quota-context"
 import { useDictionary } from "@/hooks/use-dictionary"
-import { useLocalQuota } from "@/hooks/use-local-quota"
 import { formatMessage } from "@/lib/i18n/utils"
 import { cn } from "@/lib/utils"
 

@@ -2,8 +2,8 @@
 
 import { Clock, Key, Sparkles, X } from "lucide-react"
 import type React from "react"
+import { useLocalQuota } from "@/contexts/local-quota-context"
 import { useDictionary } from "@/hooks/use-dictionary"
-import { useLocalQuota } from "@/hooks/use-local-quota"
 
 interface LocalQuotaToastProps {
     onDismiss: () => void
