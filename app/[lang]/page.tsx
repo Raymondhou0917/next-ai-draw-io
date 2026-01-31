@@ -75,11 +75,9 @@ export default function Home() {
             setDarkMode(isDark)
             document.documentElement.classList.toggle("dark", isDark)
         } else {
-            const prefersDark = window.matchMedia(
-                "(prefers-color-scheme: dark)",
-            ).matches
-            setDarkMode(prefersDark)
-            document.documentElement.classList.toggle("dark", prefersDark)
+            // 預設使用淺色模式（更適合畫圖）
+            setDarkMode(false)
+            document.documentElement.classList.remove("dark")
         }
 
         // Detect Electron and use bundled draw.io files for offline use
