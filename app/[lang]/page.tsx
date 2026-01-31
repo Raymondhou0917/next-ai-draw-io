@@ -12,6 +12,18 @@ import {
 import { useDiagram } from "@/contexts/diagram-context"
 import { i18n, type Locale } from "@/lib/i18n/config"
 
+// 將我們的語言代碼轉換為 draw.io 支援的代碼
+// draw.io 使用 zh-TW 作為繁體中文，而不是 zh-Hant
+function getDrawioLang(locale: Locale): string {
+    const langMap: Record<Locale, string> = {
+        en: "en",
+        zh: "zh",
+        ja: "ja",
+        "zh-Hant": "zh-TW",
+    }
+    return langMap[locale] || "en"
+}
+
 export default function Home() {
     const { drawioRef, handleDiagramExport, onDrawioLoad, resetDrawioReady } =
         useDiagram()
@@ -185,7 +197,7 @@ export default function Home() {
                                             noSaveBtn: true,
                                             noExitBtn: true,
                                             dark: darkMode,
-                                            lang: currentLang,
+                                            lang: getDrawioLang(currentLang),
                                             // Enable offline mode in Electron to disable external service calls
                                             ...(isElectron && {
                                                 offline: true,
