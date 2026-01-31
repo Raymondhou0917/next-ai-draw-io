@@ -35,6 +35,7 @@ interface ModelSelectorProps {
     onSelect: (modelId: string | undefined) => void
     disabled?: boolean
     showUnvalidatedModels?: boolean
+    onConfigureClick?: () => void
 }
 
 // Map our provider names to models.dev logo names
@@ -85,6 +86,7 @@ export function ModelSelector({
     onSelect,
     disabled = false,
     showUnvalidatedModels = false,
+    onConfigureClick,
 }: ModelSelectorProps) {
     const dict = useDictionary()
     const [open, setOpen] = useState(false)
@@ -381,11 +383,28 @@ export function ModelSelector({
                             </>
                         )}
 
-                        {/* Info text */}
-                        <div className="px-3 py-2 text-xs text-muted-foreground border-t">
-                            {showUnvalidatedModels
-                                ? dict.modelConfig.allModelsShown
-                                : dict.modelConfig.onlyVerifiedShown}
+                        {/* Configure button and info text */}
+                        <div className="px-3 py-2 border-t space-y-2">
+                            {onConfigureClick && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setOpen(false)
+                                        onConfigureClick()
+                                    }}
+                                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-primary hover:bg-accent rounded-md transition-colors"
+                                >
+                                    <span>+</span>
+                                    <span>
+                                        {dict.modelConfig.configureApiKey}
+                                    </span>
+                                </button>
+                            )}
+                            <div className="text-xs text-muted-foreground text-center">
+                                {showUnvalidatedModels
+                                    ? dict.modelConfig.allModelsShown
+                                    : dict.modelConfig.onlyVerifiedShown}
+                            </div>
                         </div>
                     </ModelSelectorList>
                 </ModelSelectorContent>

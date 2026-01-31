@@ -172,6 +172,7 @@ interface ChatInputProps {
     selectedModelId?: string
     onModelSelect?: (modelId: string | undefined) => void
     showUnvalidatedModels?: boolean
+    onConfigureClick?: () => void
     // Focus control props
     shouldFocus?: boolean
     onFocused?: () => void
@@ -196,6 +197,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
             selectedModelId,
             onModelSelect = () => {},
             showUnvalidatedModels = false,
+            onConfigureClick,
             shouldFocus = false,
             onFocused,
         },
@@ -553,6 +555,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
                             onSelect={onModelSelect}
                             disabled={isDisabled}
                             showUnvalidatedModels={showUnvalidatedModels}
+                            onConfigureClick={onConfigureClick}
                         />
                         <div className="w-px h-5 bg-border mx-1" />
                         {(status === "streaming" || status === "submitted") &&

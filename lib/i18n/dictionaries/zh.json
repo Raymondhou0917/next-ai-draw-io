@@ -337,6 +337,7 @@
         "serverModels": "服务器模型",
         "userModels": "用户模型",
         "configureModels": "配置模型...",
+        "configureApiKey": "设置您的 API Key",
         "onlyVerifiedShown": "仅显示已验证的模型",
         "showUnvalidatedModels": "显示未验证的模型",
         "allModelsShown": "显示所有模型（包括未验证的）",
