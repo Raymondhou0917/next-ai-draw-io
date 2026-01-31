@@ -345,6 +345,7 @@
     },
     "brand": {
         "allTools": "所有工具",
-        "raymond": "雷蒙三十"
+        "raymond": "雷蒙三十",
+        "originalProject": "原项目"
     }
 }

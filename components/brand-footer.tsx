@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutGrid } from "lucide-react"
+import { Github, LayoutGrid } from "lucide-react"
 import { useDictionary } from "@/hooks/use-dictionary"
 
 interface BrandFooterProps {
@@ -18,16 +18,28 @@ export function BrandFooter({ className }: BrandFooterProps) {
         <div
             className={`flex flex-col items-center gap-2 py-3 border-t border-border/30 bg-card/30 ${className ?? ""}`}
         >
-            {/* 返回工具列表連結 */}
-            <a
-                href="https://tool.lifehacker.tw"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-                <LayoutGrid className="w-3.5 h-3.5" />
-                {dict.brand?.allTools ?? "All Tools"}
-            </a>
+            {/* 連結區 */}
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <a
+                    href="https://tool.lifehacker.tw"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    {dict.brand?.allTools ?? "All Tools"}
+                </a>
+                <span className="text-muted-foreground/30">|</span>
+                <a
+                    href="https://github.com/DayuanJiang/next-ai-draw-io"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                    <Github className="w-3.5 h-3.5" />
+                    {dict.brand?.originalProject ?? "Original Project"}
+                </a>
+            </div>
 
             {/* Powered by 標識 */}
             <a

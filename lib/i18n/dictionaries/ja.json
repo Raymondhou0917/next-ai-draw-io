@@ -345,6 +345,7 @@
     },
     "brand": {
         "allTools": "すべてのツール",
-        "raymond": "Raymond30"
+        "raymond": "Raymond30",
+        "originalProject": "元プロジェクト"
     }
 }
