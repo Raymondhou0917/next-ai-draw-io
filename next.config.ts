@@ -14,6 +14,16 @@ const nextConfig: NextConfig = {
     outputFileTracingIncludes: {
         "*": ["./instrumentation.ts"],
     },
+    // Redirect root URL to Traditional Chinese (zh-Hant) as the default locale
+    async redirects() {
+        return [
+            {
+                source: "/",
+                destination: "/zh-Hant",
+                permanent: false, // Use temporary redirect (302) so users can still change via locale selector
+            },
+        ]
+    },
 }
 
 export default nextConfig
