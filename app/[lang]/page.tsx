@@ -25,8 +25,13 @@ function getDrawioLang(locale: Locale): string {
 }
 
 export default function Home() {
-    const { drawioRef, handleDiagramExport, onDrawioLoad, resetDrawioReady } =
-        useDiagram()
+    const {
+        drawioRef,
+        handleDiagramExport,
+        onDrawioLoad,
+        resetDrawioReady,
+        syncCurrentDiagram,
+    } = useDiagram()
     const router = useRouter()
     const pathname = usePathname()
     // Extract current language from pathname (e.g., "/zh/about" → "zh")
@@ -96,7 +101,9 @@ export default function Home() {
         onDrawioLoad()
     }, [onDrawioLoad])
 
-    const handleDarkModeChange = () => {
+    const handleDarkModeChange = async () => {
+        // 切換前先同步當前圖表狀態，確保內容不會丟失
+        await syncCurrentDiagram()
         const newValue = !darkMode
         setDarkMode(newValue)
         localStorage.setItem("next-ai-draw-io-dark-mode", String(newValue))
@@ -105,7 +112,9 @@ export default function Home() {
         resetDrawioReady()
     }
 
-    const handleDrawioUiChange = () => {
+    const handleDrawioUiChange = async () => {
+        // 切換前先同步當前圖表狀態，確保內容不會丟失
+        await syncCurrentDiagram()
         const newUi = drawioUi === "min" ? "sketch" : "min"
         localStorage.setItem("drawio-theme", newUi)
         setDrawioUi(newUi)

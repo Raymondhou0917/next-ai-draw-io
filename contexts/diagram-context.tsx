@@ -32,6 +32,7 @@ interface DiagramContextType {
     ) => void
     getThumbnailSvg: () => Promise<string | null>
     captureValidationPng: () => Promise<string | null>
+    syncCurrentDiagram: () => Promise<void>
     isDrawioReady: boolean
     onDrawioLoad: () => void
     resetDrawioReady: () => void
@@ -178,6 +179,27 @@ export function DiagramProvider({ children }: { children: React.ReactNode }) {
         } catch {
             // Timeout is expected occasionally - don't log as error
             return null
+        }
+    }
+
+    // Sync current diagram state to chartXML before theme/UI changes
+    // This ensures user's work is preserved when DrawIO remounts
+    const syncCurrentDiagram = async (): Promise<void> => {
+        if (!drawioRef.current) return
+
+        try {
+            await Promise.race([
+                new Promise<void>((resolve) => {
+                    resolverRef.current = () => resolve()
+                    drawioRef.current?.exportDiagram({ format: "xmlsvg" })
+                }),
+                new Promise<void>((_, reject) =>
+                    setTimeout(() => reject(new Error("Sync timeout")), 3000),
+                ),
+            ])
+        } catch {
+            // Timeout - diagram state might not be synced, but continue anyway
+            console.warn("[syncCurrentDiagram] Export timeout")
         }
     }
 
@@ -395,6 +417,7 @@ export function DiagramProvider({ children }: { children: React.ReactNode }) {
                 saveDiagramToFile,
                 getThumbnailSvg,
                 captureValidationPng,
+                syncCurrentDiagram,
                 isDrawioReady,
                 onDrawioLoad,
                 resetDrawioReady,
