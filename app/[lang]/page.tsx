@@ -38,7 +38,7 @@ export default function Home() {
     const currentLang = (pathname.split("/")[1] || i18n.defaultLocale) as Locale
     const [isMobile, setIsMobile] = useState(false)
     const [isChatVisible, setIsChatVisible] = useState(true)
-    const [drawioUi, setDrawioUi] = useState<"min" | "sketch">("min")
+    const [drawioUi, setDrawioUi] = useState<"min" | "sketch">("sketch")
     const [darkMode, setDarkMode] = useState(false)
     const [isLoaded, setIsLoaded] = useState(false)
     const [isDrawioReady, setIsDrawioReady] = useState(false)
@@ -201,7 +201,8 @@ export default function Home() {
                                         urlParameters={{
                                             ui: drawioUi,
                                             spin: false,
-                                            libraries: false,
+                                            // 開啟網格（sketch 模式下顯示等距圓點背景）
+                                            grid: true,
                                             saveAndExit: false,
                                             noSaveBtn: true,
                                             noExitBtn: true,
