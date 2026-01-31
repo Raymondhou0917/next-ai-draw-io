@@ -173,21 +173,25 @@
         "storageUpdateFailed": "聊天已清除，但无法更新浏览器存储"
     },
     "quota": {
-        "dailyLimit": "已达每日配额",
+        "dailyLimit": "今日免费额度已用完",
         "tokenLimit": "已达每日令牌限制",
         "tpmLimit": "速率限制",
         "tpmMessage": "请求过多。请稍等片刻。",
         "tpmMessageDetailed": "达到速率限制（{limit} 令牌/分钟）。请等待 {seconds} 秒后再发送请求。",
-        "messageApi": "看来您今天的体验次数已达上限。非常高兴您玩得开心，虽然本项目由字节跳动豆包慷慨赞助，但为了确保大家都能公平使用，我们不得不对使用量做一点小小的限制。",
+        "messageApi": "今日免费额度已用完！感谢您的使用 ✨",
         "messageToken": "看来您今天的 Token 用量已达上限。非常高兴您玩得开心，虽然本项目由字节跳动豆包慷慨赞助，但为了确保大家都能公平使用，我们不得不对使用量做一点小小的限制。",
-        "tip": "<strong>提示：</strong>您可以使用自己的 API 密钥（点击设置图标）或自托管项目来绕过这些限制。",
-        "reset": "您的限制将在明天重置。感谢您的理解。",
+        "tip": "输入您自己的 Google API Key 即可继续使用，不受限制。",
+        "reset": "免费额度重置倒数：",
+        "resetTomorrow": "您的免费额度将于明天重置。",
         "doubaoSponsorship": "<a href=\"{link}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline hover:text-foreground\">点击此处注册</a>可获得每个模型 50 万免费 Token（包括豆包、DeepSeek 和 Kimi），然后在模型设置中配置您的 API Key。",
-        "configModel": "使用您的密钥",
+        "configModel": "设置 API Key",
         "selfHost": "自托管",
         "sponsor": "赞助",
         "learnMore": "了解更多 →",
-        "usedOf": "{used}/{limit}"
+        "usedOf": "{used}/{limit}",
+        "remaining": "剩余 {remaining} 次",
+        "freeQuota": "免费额度",
+        "poweredBy": "由雷蒙三十提供"
     },
     "tools": {
         "generateDiagram": "生成图表",

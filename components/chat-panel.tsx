@@ -27,6 +27,7 @@ import { SettingsDialog } from "@/components/settings-dialog"
 import { useDiagram } from "@/contexts/diagram-context"
 import { useDiagramToolHandlers } from "@/hooks/use-diagram-tool-handlers"
 import { useDictionary } from "@/hooks/use-dictionary"
+import { useLocalQuota } from "@/hooks/use-local-quota"
 import { getSelectedAIConfig, useModelConfig } from "@/hooks/use-model-config"
 import { useSessionManager } from "@/hooks/use-session-manager"
 import { useValidateDiagram } from "@/hooks/use-validate-diagram"
@@ -43,6 +44,8 @@ import { cn, formatXML, isRealDiagram } from "@/lib/utils"
 import type { ValidationState } from "./chat/ValidationCard"
 import { ChatMessageDisplay } from "./chat-message-display"
 import { DevXmlSimulator } from "./dev-xml-simulator"
+import { LocalQuotaToast } from "./local-quota-toast"
+import { QuotaBadge } from "./quota-badge"
 
 // localStorage keys for persistence
 const STORAGE_SESSION_ID_KEY = "next-ai-draw-io-session-id"
@@ -130,6 +133,7 @@ export default function ChatPanel({
     } = useDiagram()
 
     const dict = useDictionary()
+    const localQuota = useLocalQuota()
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -764,6 +768,21 @@ export default function ChatPanel({
         e.preventDefault()
         const isProcessing = status === "streaming" || status === "submitted"
         if (input.trim() && !isProcessing) {
+            // Check local quota before sending (only if user doesn't have their own API key)
+            if (!localQuota.checkAndIncrement()) {
+                // Quota exhausted - show toast and block submission
+                toast.custom(
+                    (t) => (
+                        <LocalQuotaToast
+                            onDismiss={() => toast.dismiss(t)}
+                            onConfigModel={() => setShowModelConfigDialog(true)}
+                        />
+                    ),
+                    { duration: 20000 },
+                )
+                return
+            }
+
             // Check if input matches a cached example (only when no messages yet)
             if (messages.length === 0) {
                 const cached = findCachedResponse(
@@ -1381,6 +1400,11 @@ export default function ChatPanel({
             <footer
                 className={`${isMobile ? "p-2" : "p-4"} border-t border-border/50 bg-card/50`}
             >
+                {/* Quota Badge - shows remaining free usage */}
+                <QuotaBadge
+                    onConfigModel={() => setShowModelConfigDialog(true)}
+                    className="mb-2"
+                />
                 <ChatInput
                     input={input}
                     status={status}

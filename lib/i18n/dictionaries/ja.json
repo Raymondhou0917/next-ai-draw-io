@@ -173,21 +173,25 @@
         "storageUpdateFailed": "チャットはクリアされましたが、ブラウザストレージを更新できませんでした"
     },
     "quota": {
-        "dailyLimit": "1日の割当量に達しました",
+        "dailyLimit": "本日の無料枠を使い切りました",
         "tokenLimit": "1日のトークン制限に達しました",
         "tpmLimit": "レート制限",
         "tpmMessage": "リクエストが多すぎます。しばらくお待ちください。",
         "tpmMessageDetailed": "レート制限に達しました（{limit}トークン/分）。{seconds}秒待ってからもう一度リクエストしてください。",
-        "messageApi": "今日のデモ利用上限に達してしまったようです。楽しんでいただけて本当に嬉しいです。このデモはByteDance Doubaoのご厚意により提供されていますが、皆様に公平にご利用いただくため、少し制限を設けさせていただいております。",
+        "messageApi": "本日の無料枠を使い切りました。ご利用ありがとうございます ✨",
         "messageToken": "今日のトークン利用上限に達してしまったようです。楽しんでいただけて本当に嬉しいです。このデモはByteDance Doubaoのご厚意により提供されていますが、皆様に公平にご利用いただくため、少し制限を設けさせていただいております。",
-        "tip": "<strong>ヒント：</strong>独自の API キーを使用する（設定アイコンをクリック）か、プロジェクトをセルフホストしてこれらの制限を回避できます。",
-        "reset": "制限は明日リセットされます。ご理解ありがとうございます。",
+        "tip": "独自の Google API キーを入力すれば、制限なく引き続きご利用いただけます。",
+        "reset": "無料枠リセットまで：",
+        "resetTomorrow": "無料枠は明日リセットされます。",
         "doubaoSponsorship": "<a href=\"{link}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline hover:text-foreground\">こちらから登録</a>すると、各モデル（Doubao、DeepSeek、Kimi含む）で50万トークンを無料で取得できます。モデル設定でAPIキーを設定してください。",
-        "configModel": "APIキーを使用",
+        "configModel": "API キーを設定",
         "selfHost": "セルフホスト",
         "sponsor": "スポンサー",
         "learnMore": "詳細 →",
-        "usedOf": "{used}/{limit}"
+        "usedOf": "{used}/{limit}",
+        "remaining": "残り {remaining} 回",
+        "freeQuota": "無料枠",
+        "poweredBy": "Powered by Raymond30"
     },
     "tools": {
         "generateDiagram": "ダイアグラムを生成",
