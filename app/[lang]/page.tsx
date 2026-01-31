@@ -13,13 +13,13 @@ import { useDiagram } from "@/contexts/diagram-context"
 import { i18n, type Locale } from "@/lib/i18n/config"
 
 // 將我們的語言代碼轉換為 draw.io 支援的代碼
-// draw.io 使用 zh-TW 作為繁體中文，而不是 zh-Hant
+// draw.io 使用小寫的語言代碼，繁體中文是 "zh-tw"（不是 "zh-TW"）
 function getDrawioLang(locale: Locale): string {
     const langMap: Record<Locale, string> = {
         en: "en",
         zh: "zh",
         ja: "ja",
-        "zh-Hant": "zh-TW",
+        "zh-Hant": "zh-tw", // draw.io 使用小寫
     }
     return langMap[locale] || "en"
 }
