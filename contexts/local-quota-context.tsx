@@ -8,37 +8,11 @@ import {
     useEffect,
     useState,
 } from "react"
+import { getApiEndpoint } from "@/lib/base-path"
 import { STORAGE_KEYS } from "@/lib/storage"
 
-// 每日免費額度限制
+// 每日免費額度限制（與後端同步）
 const DAILY_FREE_LIMIT = 20
-
-// 時區：台北時間 (UTC+8)
-const TIMEZONE = "Asia/Taipei"
-
-/**
- * 取得台北時間的今日日期字串 (YYYY-MM-DD)
- */
-function getTodayInTaipei(): string {
-    return new Intl.DateTimeFormat("en-CA", {
-        timeZone: TIMEZONE,
-    }).format(new Date())
-}
-
-/**
- * 計算距離台北時間午夜的剩餘毫秒數
- */
-function getMillisecondsUntilMidnight(): number {
-    const now = new Date()
-    // 取得台北時間的今日日期
-    const taipeiDate = getTodayInTaipei()
-    // 建立明天午夜的時間（台北時間）
-    const [year, month, day] = taipeiDate.split("-").map(Number)
-    const tomorrowMidnight = new Date(
-        Date.UTC(year, month - 1, day + 1, 0, 0, 0) - 8 * 60 * 60 * 1000, // UTC+8 轉換
-    )
-    return Math.max(0, tomorrowMidnight.getTime() - now.getTime())
-}
 
 /**
  * 格式化剩餘時間為 HH:MM:SS
@@ -51,176 +25,214 @@ function formatTimeRemaining(ms: number): string {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
 }
 
-interface LocalQuotaState {
-    count: number
-    date: string
+/**
+ * 檢查用戶是否有自己的 API Key
+ */
+function checkHasOwnApiKey(): boolean {
+    if (typeof window === "undefined") return false
+
+    const modelConfigs = localStorage.getItem(STORAGE_KEYS.modelConfigs)
+    if (modelConfigs) {
+        try {
+            const configs = JSON.parse(modelConfigs)
+            return Object.values(configs).some((config: any) => {
+                return config?.apiKey && config.apiKey.trim() !== ""
+            })
+        } catch {
+            return false
+        }
+    }
+    return false
+}
+
+interface GlobalQuotaState {
+    used: number
     remaining: number
     isExhausted: boolean
     timeUntilReset: string
+    resetInMs: number
     hasOwnApiKey: boolean
+    isLoading: boolean
 }
 
-interface LocalQuotaContextValue extends LocalQuotaState {
-    checkAndIncrement: () => boolean
-    refresh: () => void
+interface QuotaCheckResult {
+    success: boolean
+    message?: string
+}
+
+interface LocalQuotaContextValue extends GlobalQuotaState {
+    checkAndIncrement: () => Promise<QuotaCheckResult>
+    refresh: () => Promise<void>
     limit: number
+    // 向後相容：count 和 date
+    count: number
+    date: string
 }
 
 const LocalQuotaContext = createContext<LocalQuotaContextValue | null>(null)
 
 /**
- * LocalQuotaProvider - 統一管理客戶端 Quota 狀態
+ * LocalQuotaProvider - 統一管理全局 Quota 狀態
  *
  * 功能：
- * 1. 每日 20 次免費額度（台北時間午夜重置）
+ * 1. 每日 20 次**全局共享**免費額度（台北時間午夜重置）
  * 2. 顯示剩餘次數和重置倒數
  * 3. 如果用戶有自己的 API Key，不受限制
  * 4. 所有使用 useLocalQuota 的組件共享同一個狀態
  */
 export function LocalQuotaProvider({ children }: { children: ReactNode }) {
-    const [state, setState] = useState<LocalQuotaState>({
-        count: 0,
-        date: "",
+    const [state, setState] = useState<GlobalQuotaState>({
+        used: 0,
         remaining: DAILY_FREE_LIMIT,
         isExhausted: false,
         timeUntilReset: "",
+        resetInMs: 0,
         hasOwnApiKey: false,
+        isLoading: true,
     })
 
-    // 從 localStorage 讀取狀態
-    const loadState = useCallback(() => {
-        if (typeof window === "undefined") return
-
-        const today = getTodayInTaipei()
-        const storedDate = localStorage.getItem(STORAGE_KEYS.requestDate)
-        const storedCount = localStorage.getItem(STORAGE_KEYS.requestCount)
-
-        // 如果日期不同，重置計數
-        let count = 0
-        if (storedDate === today && storedCount) {
-            count = parseInt(storedCount, 10) || 0
-        } else {
-            // 新的一天，重置計數
-            localStorage.setItem(STORAGE_KEYS.requestDate, today)
-            localStorage.setItem(STORAGE_KEYS.requestCount, "0")
-        }
-
-        // 檢查用戶是否有自己的 API Key
-        const modelConfigs = localStorage.getItem(STORAGE_KEYS.modelConfigs)
-        let hasOwnApiKey = false
-        if (modelConfigs) {
-            try {
-                const configs = JSON.parse(modelConfigs)
-                // 檢查是否有任何非空的 API Key
-                hasOwnApiKey = Object.values(configs).some((config: any) => {
-                    return config?.apiKey && config.apiKey.trim() !== ""
-                })
-            } catch {
-                // JSON 解析失敗，忽略
+    // 從後端 API 取得全局額度狀態
+    const fetchQuotaState = useCallback(async () => {
+        try {
+            const response = await fetch(getApiEndpoint("/api/global-quota"))
+            if (!response.ok) {
+                console.warn("Failed to fetch quota state:", response.status)
+                return
             }
+
+            const data = await response.json()
+            const hasOwnApiKey = checkHasOwnApiKey()
+
+            setState({
+                used: data.used,
+                remaining: data.remaining,
+                isExhausted: !hasOwnApiKey && data.isExhausted,
+                timeUntilReset: formatTimeRemaining(data.resetInMs),
+                resetInMs: data.resetInMs,
+                hasOwnApiKey,
+                isLoading: false,
+            })
+        } catch (error) {
+            console.warn("Error fetching quota state:", error)
+            setState((prev) => ({ ...prev, isLoading: false }))
         }
-
-        const remaining = Math.max(0, DAILY_FREE_LIMIT - count)
-        const isExhausted = !hasOwnApiKey && remaining <= 0
-        const timeUntilReset = formatTimeRemaining(
-            getMillisecondsUntilMidnight(),
-        )
-
-        setState({
-            count,
-            date: today,
-            remaining,
-            isExhausted,
-            timeUntilReset,
-            hasOwnApiKey,
-        })
     }, [])
 
     // 初始載入
     useEffect(() => {
-        loadState()
-    }, [loadState])
+        fetchQuotaState()
+    }, [fetchQuotaState])
 
-    // 每秒更新倒數計時
+    // 每秒更新倒數計時（使用本地計算）
     useEffect(() => {
         const interval = setInterval(() => {
-            setState((prev) => ({
-                ...prev,
-                timeUntilReset: formatTimeRemaining(
-                    getMillisecondsUntilMidnight(),
-                ),
-            }))
+            setState((prev) => {
+                const newResetInMs = Math.max(0, prev.resetInMs - 1000)
+                return {
+                    ...prev,
+                    timeUntilReset: formatTimeRemaining(newResetInMs),
+                    resetInMs: newResetInMs,
+                }
+            })
         }, 1000)
 
         return () => clearInterval(interval)
     }, [])
 
-    // 每分鐘重新檢查日期（處理跨日情況）
+    // 每 30 秒輪詢一次後端狀態（因為其他用戶也可能在使用）
     useEffect(() => {
         const interval = setInterval(() => {
-            const today = getTodayInTaipei()
-            if (state.date !== today) {
-                loadState()
-            }
-        }, 60000)
+            fetchQuotaState()
+        }, 30000)
 
         return () => clearInterval(interval)
-    }, [state.date, loadState])
+    }, [fetchQuotaState])
 
-    // 檢查並增加計數（如果允許使用）
-    const checkAndIncrement = useCallback((): boolean => {
-        if (typeof window === "undefined") return false
+    // 監聽 hasOwnApiKey 變化（當用戶設定 API Key 時）
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const hasOwnApiKey = checkHasOwnApiKey()
+            setState((prev) => ({
+                ...prev,
+                hasOwnApiKey,
+                isExhausted: !hasOwnApiKey && prev.remaining <= 0,
+            }))
+        }
 
-        // 如果用戶有自己的 API Key，永遠允許
-        const modelConfigs = localStorage.getItem(STORAGE_KEYS.modelConfigs)
-        if (modelConfigs) {
-            try {
-                const configs = JSON.parse(modelConfigs)
-                const hasOwnKey = Object.values(configs).some((config: any) => {
-                    return config?.apiKey && config.apiKey.trim() !== ""
-                })
-                if (hasOwnKey) {
-                    return true
-                }
-            } catch {
-                // 忽略
+        window.addEventListener("storage", handleStorageChange)
+        return () => window.removeEventListener("storage", handleStorageChange)
+    }, [])
+
+    // 檢查並使用一次額度
+    const checkAndIncrement =
+        useCallback(async (): Promise<QuotaCheckResult> => {
+            const hasOwnApiKey = checkHasOwnApiKey()
+
+            // 如果用戶有自己的 API Key，直接允許
+            if (hasOwnApiKey) {
+                return { success: true }
             }
-        }
 
-        // 檢查日期，可能需要重置
-        const today = getTodayInTaipei()
-        const storedDate = localStorage.getItem(STORAGE_KEYS.requestDate)
-        let currentCount = 0
+            try {
+                const response = await fetch(
+                    getApiEndpoint("/api/global-quota"),
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-has-own-api-key": hasOwnApiKey
+                                ? "true"
+                                : "false",
+                        },
+                    },
+                )
 
-        if (storedDate === today) {
-            currentCount = parseInt(
-                localStorage.getItem(STORAGE_KEYS.requestCount) || "0",
-                10,
-            )
-        } else {
-            // 新的一天，重置
-            localStorage.setItem(STORAGE_KEYS.requestDate, today)
-            localStorage.setItem(STORAGE_KEYS.requestCount, "0")
-        }
+                const data = await response.json()
 
-        // 檢查是否超出限制
-        if (currentCount >= DAILY_FREE_LIMIT) {
-            loadState()
-            return false
-        }
+                if (!response.ok) {
+                    // 額度用完
+                    setState((prev) => ({
+                        ...prev,
+                        used: data.used ?? prev.used,
+                        remaining: data.remaining ?? 0,
+                        isExhausted: true,
+                        resetInMs: data.resetInMs ?? prev.resetInMs,
+                        timeUntilReset: formatTimeRemaining(
+                            data.resetInMs ?? prev.resetInMs,
+                        ),
+                    }))
+                    return {
+                        success: false,
+                        message: data.message || "Daily quota exhausted",
+                    }
+                }
 
-        // 增加計數
-        const newCount = currentCount + 1
-        localStorage.setItem(STORAGE_KEYS.requestCount, newCount.toString())
-        loadState() // 更新共享狀態
-        return true
-    }, [loadState])
+                // 成功使用
+                setState((prev) => ({
+                    ...prev,
+                    used: data.used,
+                    remaining: data.remaining,
+                    isExhausted: data.isExhausted,
+                    resetInMs: data.resetInMs,
+                    timeUntilReset: formatTimeRemaining(data.resetInMs),
+                }))
+
+                return { success: true }
+            } catch (error) {
+                console.error("Error checking quota:", error)
+                // 網路錯誤時，樂觀地允許（避免阻塞用戶）
+                return { success: true }
+            }
+        }, [])
 
     const value: LocalQuotaContextValue = {
         ...state,
         checkAndIncrement,
-        refresh: loadState,
+        refresh: fetchQuotaState,
         limit: DAILY_FREE_LIMIT,
+        // 向後相容
+        count: state.used,
+        date: "",
     }
 
     return (
@@ -231,7 +243,7 @@ export function LocalQuotaProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * useLocalQuota - 使用共享的 Quota 狀態
+ * useLocalQuota - 使用共享的全局 Quota 狀態
  *
  * 必須在 LocalQuotaProvider 內使用
  */

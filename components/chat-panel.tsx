@@ -769,8 +769,9 @@ export default function ChatPanel({
         e.preventDefault()
         const isProcessing = status === "streaming" || status === "submitted"
         if (input.trim() && !isProcessing) {
-            // Check local quota before sending (only if user doesn't have their own API key)
-            if (!localQuota.checkAndIncrement()) {
+            // Check global quota before sending (only if user doesn't have their own API key)
+            const quotaResult = await localQuota.checkAndIncrement()
+            if (!quotaResult.success) {
                 // Quota exhausted - show toast and block submission
                 toast.custom(
                     (t) => (
