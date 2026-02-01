@@ -3,7 +3,6 @@
 import { Clock, Key, Sparkles } from "lucide-react"
 import { useLocalQuota } from "@/contexts/local-quota-context"
 import { useDictionary } from "@/hooks/use-dictionary"
-import { formatMessage } from "@/lib/i18n/utils"
 import { cn } from "@/lib/utils"
 
 interface QuotaBadgeProps {
@@ -63,13 +62,12 @@ export function QuotaBadge({ onConfigModel, className }: QuotaBadgeProps) {
         >
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span className="text-xs font-medium text-muted-foreground">
-                {dict.quota.freeQuota}:{" "}
-                <span className="text-foreground">
-                    {formatMessage(dict.quota.remaining, {
-                        remaining: remaining.toString(),
-                    })}
+                每日免費額度：剩餘{" "}
+                <span className="text-foreground">{remaining}</span>
+                <span className="text-muted-foreground/60"> / {limit} 次</span>
+                <span className="text-muted-foreground/50 ml-1">
+                    （每日重置，目前使用雷蒙的額度，建議使用自己的 API）
                 </span>
-                <span className="text-muted-foreground/60">/{limit}</span>
             </span>
         </div>
     )
