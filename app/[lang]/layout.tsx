@@ -46,12 +46,12 @@ export async function generateMetadata({
         rawLang in { en: 1, zh: 1, ja: 1, "zh-Hant": 1 } ? rawLang : "en"
     ) as Locale
 
-    // Default to English metadata
+    // 雷蒙三十品牌標題
     const titles: Record<Locale, string> = {
-        en: "Next AI Draw.io - AI-Powered Diagram Generator",
-        zh: "Next AI Draw.io - AI powered diagram generator",
-        ja: "Next AI Draw.io - AI-powered diagram generator",
-        "zh-Hant": "Next AI Draw.io - AI 驅動的圖表產生器",
+        en: "AI Flowchart - Raymond's Toolbox",
+        zh: "AI 流程图 - 雷蒙三十小工具",
+        ja: "AI フローチャート - レイモンドツール",
+        "zh-Hant": "AI 流程圖 - 雷蒙三十小工具",
     }
 
     const descriptions: Record<Locale, string> = {
@@ -76,16 +76,16 @@ export async function generateMetadata({
             "free diagram generator",
             "online diagram maker",
         ],
-        authors: [{ name: "Next AI Draw.io" }],
-        creator: "Next AI Draw.io",
-        publisher: "Next AI Draw.io",
-        metadataBase: new URL("https://next-ai-drawio.jiang.jp"),
+        authors: [{ name: "雷蒙三十 Raymond" }],
+        creator: "雷蒙三十 Raymond",
+        publisher: "雷蒙三十 Raymond",
+        metadataBase: new URL("https://draw.lifehacker.tw"),
         openGraph: {
             title: titles[lang],
             description: descriptions[lang],
             type: "website",
-            url: "https://next-ai-drawio.jiang.jp",
-            siteName: "Next AI Draw.io",
+            url: "https://draw.lifehacker.tw",
+            siteName: "雷蒙三十小工具",
             locale:
                 lang === "zh"
                     ? "zh_CN"
@@ -121,7 +121,8 @@ export async function generateMetadata({
             },
         },
         icons: {
-            icon: "/favicon.ico",
+            icon: "https://image.lifehacker.tw/lifehacker-pic/logo-raymond-30.png",
+            apple: "https://image.lifehacker.tw/lifehacker-pic/logo-raymond-30.png",
         },
         alternates: {
             languages: {
@@ -149,12 +150,12 @@ export default async function RootLayout({
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        name: "Next AI Draw.io",
+        name: "AI 流程圖 - 雷蒙三十小工具",
         applicationCategory: "DesignApplication",
         operatingSystem: "Web Browser",
         description:
             "AI-powered diagram generator with targeted XML editing capabilities that integrates with draw.io for creating AWS architecture diagrams, flowcharts, and technical diagrams. Features diagram history, multi-provider AI support, and real-time collaboration.",
-        url: "https://next-ai-drawio.jiang.jp",
+        url: "https://draw.lifehacker.tw",
         inLanguage: validLang,
         offers: {
             "@type": "Offer",
