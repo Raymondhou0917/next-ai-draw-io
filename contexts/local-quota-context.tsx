@@ -12,7 +12,8 @@ import { getApiEndpoint } from "@/lib/base-path"
 import { STORAGE_KEYS } from "@/lib/storage"
 
 // 每日免費額度限制（與後端同步）
-const DAILY_FREE_LIMIT = 20
+// Gemini 2.5 Flash 免費額度 500 次/天，設 30 次全局共享
+const DAILY_FREE_LIMIT = 30
 
 /**
  * 格式化剩餘時間為 HH:MM:SS
