@@ -66,7 +66,7 @@ export function QuotaBadge({ onConfigModel, className }: QuotaBadgeProps) {
                 <span className="text-foreground">{remaining}</span>
                 <span className="text-muted-foreground/60"> / {limit} 次</span>
                 <span className="text-muted-foreground/50 ml-1">
-                    （每日重置，目前使用雷蒙的額度，建議使用自己的 API）
+                    （每日重置；點擊下方機器人圖示，設定個人 API）
                 </span>
             </span>
         </div>
