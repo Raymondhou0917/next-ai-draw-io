@@ -231,6 +231,8 @@ export function DiagramProvider({ children }: { children: React.ReactNode }) {
 
         // Keep chartXML in sync even when diagrams are injected (e.g., display_diagram tool)
         setChartXML(xmlToLoad)
+        // 直接同步更新 ref，確保主題切換時能立即取得最新值
+        chartXMLRef.current = xmlToLoad
 
         if (drawioRef.current) {
             drawioRef.current.load({
@@ -263,6 +265,9 @@ export function DiagramProvider({ children }: { children: React.ReactNode }) {
 
         const extractedXML = extractDiagramXML(data.data)
         setChartXML(extractedXML)
+        // 直接同步更新 ref，確保主題切換時能立即取得最新值
+        // （React 狀態更新是異步的，useEffect 同步會有延遲）
+        chartXMLRef.current = extractedXML
         setLatestSvg(data.data)
 
         // Only add to history if this was a user-initiated export
