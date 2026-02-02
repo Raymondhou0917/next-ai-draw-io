@@ -28,6 +28,7 @@ function formatTimeRemaining(ms: number): string {
 
 /**
  * 檢查用戶是否有自己的 API Key
+ * 遍歷 MultiModelConfig.providers 數組，檢查任何 provider 是否有 API Key
  */
 function checkHasOwnApiKey(): boolean {
     if (typeof window === "undefined") return false
@@ -35,10 +36,23 @@ function checkHasOwnApiKey(): boolean {
     const modelConfigs = localStorage.getItem(STORAGE_KEYS.modelConfigs)
     if (modelConfigs) {
         try {
-            const configs = JSON.parse(modelConfigs)
-            return Object.values(configs).some((config: any) => {
-                return config?.apiKey && config.apiKey.trim() !== ""
-            })
+            const config = JSON.parse(modelConfigs)
+            // MultiModelConfig 結構：{ version, providers: ProviderConfig[], selectedModelId, ... }
+            // 需要遍歷 providers 數組來檢查 API Key
+            const providers = config?.providers
+            if (Array.isArray(providers)) {
+                return providers.some((provider: any) => {
+                    // 檢查各種類型的 API Key（標準、AWS Bedrock、Vertex AI）
+                    return (
+                        (provider?.apiKey && provider.apiKey.trim() !== "") ||
+                        (provider?.awsAccessKeyId &&
+                            provider.awsAccessKeyId.trim() !== "") ||
+                        (provider?.vertexApiKey &&
+                            provider.vertexApiKey.trim() !== "")
+                    )
+                })
+            }
+            return false
         } catch {
             return false
         }
