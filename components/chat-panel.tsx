@@ -131,6 +131,7 @@ export default function ChatPanel({
         captureValidationPng,
         diagramHistory,
         setDiagramHistory,
+        setDiagramGeneratingState,
     } = useDiagram()
 
     const dict = useDictionary()
@@ -951,6 +952,7 @@ export default function ChatPanel({
         setInput("")
         clearDiagram()
         setDiagramHistory([])
+        setDiagramGeneratingState("idle") // 清除載入狀態
         setValidationStates({}) // Clear validation states to prevent memory leak
         handleFileChange([]) // Use handleFileChange to also clear pdfData
         setUrlData(new Map())
@@ -978,6 +980,7 @@ export default function ChatPanel({
         dict.dialogs.clearSuccess,
         buildSessionData,
         setDiagramHistory,
+        setDiagramGeneratingState,
         pathname,
     ])
 
@@ -1038,8 +1041,10 @@ export default function ChatPanel({
             }
         })
 
+        // 清除載入狀態
+        setDiagramGeneratingState("idle")
         stop()
-    }, [messages, addToolOutput, stop])
+    }, [messages, addToolOutput, stop, setDiagramGeneratingState])
 
     // Send chat message with headers
     const sendChatMessage = (

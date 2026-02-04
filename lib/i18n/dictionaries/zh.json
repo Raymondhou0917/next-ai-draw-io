@@ -348,5 +348,11 @@
         "allTools": "所有工具",
         "raymond": "雷蒙三十",
         "originalProject": "原项目"
+    },
+    "diagramLoading": {
+        "generating": "AI 正在生成流程图...",
+        "rendering": "正在渲染图表...",
+        "pleaseWait": "请稍候，这可能需要几秒钟",
+        "drawioLoading": "Draw.io 面板加载中..."
     }
 }

@@ -180,7 +180,11 @@ export function ChatMessageDisplay({
     onImproveWithSuggestions,
 }: ChatMessageDisplayProps) {
     const dict = useDictionary()
-    const { chartXML, loadDiagram: onDisplayChart } = useDiagram()
+    const {
+        chartXML,
+        loadDiagram: onDisplayChart,
+        setDiagramGeneratingState,
+    } = useDiagram()
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const scrollTopRef = useRef<HTMLDivElement>(null)
     const previousXML = useRef<string>("")
@@ -470,6 +474,9 @@ export function ChatMessageDisplay({
                                 state === "input-streaming" ||
                                 state === "input-available"
                             ) {
+                                // 設定生成狀態，在白板顯示載入動畫
+                                setDiagramGeneratingState("generating")
+
                                 // Debounce streaming updates - queue the XML and process after delay
                                 pendingXmlRef.current = xml
 
@@ -482,6 +489,10 @@ export function ChatMessageDisplay({
                                             debounceTimeoutRef.current = null
                                             pendingXmlRef.current = null
                                             if (pendingXml) {
+                                                // 切換到渲染狀態
+                                                setDiagramGeneratingState(
+                                                    "rendering",
+                                                )
                                                 handleDisplayChart(
                                                     pendingXml,
                                                     false,
@@ -510,6 +521,8 @@ export function ChatMessageDisplay({
                                 processedToolCalls.current.add(toolCallId)
                                 // Clean up the ref entry - tool is complete, no longer needed
                                 lastProcessedXmlRef.current.delete(toolCallId)
+                                // 完成，清除載入狀態
+                                setDiagramGeneratingState("idle")
                             }
                         }
 
@@ -559,6 +572,9 @@ export function ChatMessageDisplay({
                                 state === "input-streaming" ||
                                 state === "input-available"
                             ) {
+                                // 設定生成狀態
+                                setDiagramGeneratingState("generating")
+
                                 // Queue the operations for debounced processing
                                 pendingEditRef.current = {
                                     operations: completeOps,
@@ -582,6 +598,9 @@ export function ChatMessageDisplay({
                                                 if (!origXml) return
 
                                                 try {
+                                                    setDiagramGeneratingState(
+                                                        "rendering",
+                                                    )
                                                     const {
                                                         result: editedXml,
                                                     } = applyDiagramOperations(
@@ -626,6 +645,8 @@ export function ChatMessageDisplay({
                                     toolCallId + "-opCount",
                                 )
                                 processedToolCalls.current.add(toolCallId)
+                                // 完成，清除載入狀態
+                                setDiagramGeneratingState("idle")
                                 // Note: Don't delete editDiagramOriginalXmlRef here - tool handler needs it
                             }
                         }
@@ -638,7 +659,7 @@ export function ChatMessageDisplay({
         // The cleanup runs on every re-render (when messages changes),
         // which would cancel the timeout before it fires.
         // Let the timeouts complete naturally - they're harmless if component unmounts.
-    }, [messages, handleDisplayChart, chartXML])
+    }, [messages, handleDisplayChart, chartXML, setDiagramGeneratingState])
 
     return (
         <ScrollArea className="h-full w-full scrollbar-thin">

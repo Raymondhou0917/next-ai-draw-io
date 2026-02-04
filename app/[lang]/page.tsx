@@ -10,6 +10,7 @@ import {
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { useDiagram } from "@/contexts/diagram-context"
+import { useDictionary } from "@/hooks/use-dictionary"
 import { i18n, type Locale } from "@/lib/i18n/config"
 
 // 將我們的語言代碼轉換為 draw.io 支援的代碼
@@ -31,7 +32,9 @@ export default function Home() {
         onDrawioLoad,
         resetDrawioReady,
         syncCurrentDiagram,
+        diagramGeneratingState,
     } = useDiagram()
+    const dict = useDictionary()
     const router = useRouter()
     const pathname = usePathname()
     // Extract current language from pathname (e.g., "/zh/about" → "zh")
@@ -217,8 +220,37 @@ export default function Home() {
                             {(!isLoaded || !isDrawioReady) && (
                                 <div className="h-full w-full bg-background flex items-center justify-center">
                                     <span className="text-muted-foreground">
-                                        Draw.io panel is loading...
+                                        {dict.diagramLoading?.drawioLoading || "Draw.io panel is loading..."}
                                     </span>
+                                </div>
+                            )}
+                            {/* AI 生成圖表時的載入覆蓋層 */}
+                            {diagramGeneratingState !== "idle" && isDrawioReady && (
+                                <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 pointer-events-none">
+                                    <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-card/90 shadow-lg border border-border/50">
+                                        {/* Spinner 動畫 */}
+                                        <div className="relative w-12 h-12">
+                                            <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+                                            <div className="absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin" />
+                                        </div>
+                                        {/* 狀態文字 */}
+                                        <div className="text-center">
+                                            <p className="text-sm font-medium text-foreground">
+                                                {diagramGeneratingState === "generating"
+                                                    ? (dict.diagramLoading?.generating || "AI is generating flowchart...")
+                                                    : (dict.diagramLoading?.rendering || "Rendering diagram...")}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                {dict.diagramLoading?.pleaseWait || "Please wait, this may take a few seconds"}
+                                            </p>
+                                        </div>
+                                        {/* 進度點動畫 */}
+                                        <div className="flex gap-1">
+                                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

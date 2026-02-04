@@ -12,6 +12,9 @@ import {
     validateAndFixXml,
 } from "../lib/utils"
 
+// 圖表生成狀態，用於顯示載入動畫
+type DiagramGeneratingState = "idle" | "generating" | "rendering"
+
 interface DiagramContextType {
     chartXML: string
     latestSvg: string
@@ -38,6 +41,9 @@ interface DiagramContextType {
     resetDrawioReady: () => void
     showSaveDialog: boolean
     setShowSaveDialog: (show: boolean) => void
+    // 圖表生成狀態（用於載入動畫）
+    diagramGeneratingState: DiagramGeneratingState
+    setDiagramGeneratingState: (state: DiagramGeneratingState) => void
 }
 
 const DiagramContext = createContext<DiagramContextType | undefined>(undefined)
@@ -50,6 +56,9 @@ export function DiagramProvider({ children }: { children: React.ReactNode }) {
     >([])
     const [isDrawioReady, setIsDrawioReady] = useState(false)
     const [showSaveDialog, setShowSaveDialog] = useState(false)
+    // 圖表生成狀態：idle（閒置）、generating（AI 生成中）、rendering（DrawIO 渲染中）
+    const [diagramGeneratingState, setDiagramGeneratingState] =
+        useState<DiagramGeneratingState>("idle")
     const hasCalledOnLoadRef = useRef(false)
     const drawioRef = useRef<DrawIoEmbedRef | null>(null)
     const resolverRef = useRef<((value: string) => void) | null>(null)
@@ -428,6 +437,8 @@ export function DiagramProvider({ children }: { children: React.ReactNode }) {
                 resetDrawioReady,
                 showSaveDialog,
                 setShowSaveDialog,
+                diagramGeneratingState,
+                setDiagramGeneratingState,
             }}
         >
             {children}
