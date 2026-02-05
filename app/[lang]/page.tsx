@@ -224,32 +224,21 @@ export default function Home() {
                                     </span>
                                 </div>
                             )}
-                            {/* AI 生成圖表時的載入覆蓋層 */}
+                            {/* AI 生成圖表時的小型狀態指示器（不擋住實時繪圖） */}
                             {diagramGeneratingState !== "idle" && isDrawioReady && (
-                                <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 pointer-events-none">
-                                    <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-card/90 shadow-lg border border-border/50">
+                                <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
+                                    <div className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-card/95 shadow-lg border border-border/50 backdrop-blur-sm">
                                         {/* Spinner 動畫 */}
-                                        <div className="relative w-12 h-12">
-                                            <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
-                                            <div className="absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin" />
+                                        <div className="relative w-5 h-5 flex-shrink-0">
+                                            <div className="absolute inset-0 border-2 border-primary/20 rounded-full" />
+                                            <div className="absolute inset-0 border-2 border-transparent border-t-primary rounded-full animate-spin" />
                                         </div>
                                         {/* 狀態文字 */}
-                                        <div className="text-center">
-                                            <p className="text-sm font-medium text-foreground">
-                                                {diagramGeneratingState === "generating"
-                                                    ? (dict.diagramLoading?.generating || "AI is generating flowchart...")
-                                                    : (dict.diagramLoading?.rendering || "Rendering diagram...")}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                {dict.diagramLoading?.pleaseWait || "Please wait, this may take a few seconds"}
-                                            </p>
-                                        </div>
-                                        {/* 進度點動畫 */}
-                                        <div className="flex gap-1">
-                                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-                                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-                                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                                        </div>
+                                        <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                                            {diagramGeneratingState === "generating"
+                                                ? (dict.diagramLoading?.generating || "AI is generating...")
+                                                : (dict.diagramLoading?.rendering || "Rendering...")}
+                                        </span>
                                     </div>
                                 </div>
                             )}
