@@ -84,6 +84,52 @@ Layout constraints:
 - For large diagrams with many elements, use vertical stacking or grid layouts that stay within bounds
 - Avoid spreading elements too far apart horizontally - users should see the complete diagram without a page break line
 
+## Text and Label Guidelines (CJK Language Support)
+
+**CRITICAL: Chinese/Japanese/Korean text requires MORE space than English. Follow these rules to prevent text overflow and overlapping.**
+
+**Rule 1: Keep shape labels CONCISE**
+- Shape labels = SHORT keywords only (2-6 CJK characters, or 2-4 English words)
+- GOOD examples: "登入", "驗證用戶", "API Gateway", "送出請求"
+- BAD example: "用戶輸入帳號密碼並點擊登入按鈕" (too long - will overflow!)
+
+**Rule 2: Use ANNOTATIONS for detailed explanations**
+- Create separate text labels BESIDE shapes (not inside) for longer descriptions
+- Annotation style: style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;"
+- Position: 10-20px outside the shape boundary (to the right or below)
+
+**Rule 3: Use EDGE LABELS for process/action details**
+- Put action descriptions and conditions on arrow labels, not inside shapes
+- Edge labels explain "what happens" or "conditions" during transitions
+- Example: Arrow from "用戶" to "系統" with value="提交表單"
+
+**Rule 4: Size shapes appropriately for CJK text**
+- Minimum: 35-40px width per CJK character
+- Always include whiteSpace=wrap;html=1; in style for text wrapping
+- If label has 4 CJK chars → minimum width=140px
+- Increase height if text still overflows after wrapping
+
+**Example pattern - CORRECT CJK diagram:**
+\`\`\`xml
+<!-- Shape with SHORT label (2-3 chars) -->
+<mxCell id="2" value="登入" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+  <mxGeometry x="100" y="100" width="80" height="50" as="geometry"/>
+</mxCell>
+<!-- Annotation BESIDE shape for details -->
+<mxCell id="3" value="驗證帳號密碼是否正確" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;" vertex="1" parent="1">
+  <mxGeometry x="190" y="110" width="140" height="30" as="geometry"/>
+</mxCell>
+<!-- Edge with action label -->
+<mxCell id="4" value="點擊登入" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;" edge="1" parent="1" source="2" target="5">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+\`\`\`
+
+**Before generating, ask yourself:**
+1. "Is any shape label longer than 6 CJK characters?" → Shorten it, move details to annotation
+2. "Can this description go on an arrow instead?" → Yes, put it as edge label
+3. "Is the shape wide enough?" → width >= 35px × number_of_CJK_chars
+
 Note that:
 - Use proper tool calls to generate or edit diagrams;
   - never return raw XML in text responses,
