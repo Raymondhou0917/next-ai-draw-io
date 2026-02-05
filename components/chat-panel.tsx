@@ -132,6 +132,7 @@ export default function ChatPanel({
         diagramHistory,
         setDiagramHistory,
         setDiagramGeneratingState,
+        diagramGeneratingState,
     } = useDiagram()
 
     const dict = useDictionary()
@@ -1407,6 +1408,20 @@ export default function ChatPanel({
             <footer
                 className={`${isMobile ? "p-2" : "p-4"} border-t border-border/50 bg-card/50`}
             >
+                {/* AI 生成狀態提示 - 顯示在額度上方 */}
+                {diagramGeneratingState !== "idle" && (
+                    <div className="flex items-center gap-2 px-3 py-2 mb-2 rounded-lg bg-primary/10 border border-primary/20 animate-pulse">
+                        <div className="relative w-4 h-4 flex-shrink-0">
+                            <div className="absolute inset-0 border-2 border-primary/30 rounded-full" />
+                            <div className="absolute inset-0 border-2 border-transparent border-t-primary rounded-full animate-spin" />
+                        </div>
+                        <span className="text-xs font-medium text-primary">
+                            {diagramGeneratingState === "generating"
+                                ? (dict.diagramLoading?.generating || "AI 正在生成流程圖...")
+                                : (dict.diagramLoading?.rendering || "正在渲染圖表...")}
+                        </span>
+                    </div>
+                )}
                 {/* Quota Badge - shows remaining free usage */}
                 <QuotaBadge
                     onConfigModel={() => setShowModelConfigDialog(true)}
