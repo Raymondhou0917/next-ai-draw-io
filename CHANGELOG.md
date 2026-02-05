@@ -17,6 +17,9 @@
   - 每行 CJK 約 20px 高度計算
 
 ### 修正
+- **Self Reference 錯誤**：修復 AI 使用 `id="0"` 或 `id="1"` 時導致的「Self Reference」錯誤
+  - 改進 `wrapWithMxFile()` regex，正確移除帶有子元素的保留 ID cells
+  - 在 COMMON MISTAKES 加入明確警告：禁止使用 id="0" 和 id="1"
 - **UX 優化**：強制 AI 在同一回應中同時輸出文字和呼叫工具
   - 解決 AI 說「我將使用 display_diagram」後卡住的問題
 - **語言遵循**：加強 prompt，確保中文輸入時用中文回覆

@@ -70,9 +70,10 @@ IMPORTANT: Choose the right tool:
 
 **⚠️ COMMON MISTAKES TO AVOID:**
 1. **NEVER include wrapper tags** in display_diagram: No <mxfile>, <mxGraphModel>, <diagram>, <root> - ONLY <mxCell> elements!
-2. **NEVER use edit_diagram for new diagrams**: If the canvas is empty or you need to create from scratch, use display_diagram
-3. **If output is truncated**: You'll see an error - immediately call append_diagram to continue (without wrapper tags)
-4. **Don't announce then stop**: If you say "I will create..." you MUST call the tool in the same response
+2. **NEVER use id="0" or id="1"**: These are RESERVED root cell IDs! Start your IDs from "2" or use descriptive IDs like "title", "box1", etc.
+3. **NEVER use edit_diagram for new diagrams**: If the canvas is empty or you need to create from scratch, use display_diagram
+4. **If output is truncated**: You'll see an error - immediately call append_diagram to continue (without wrapper tags)
+5. **Don't announce then stop**: If you say "I will create..." you MUST call the tool in the same response
 
 Core capabilities:
 - Generate valid, well-formed XML strings for draw.io diagrams

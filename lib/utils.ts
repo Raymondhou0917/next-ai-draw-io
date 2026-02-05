@@ -361,10 +361,12 @@ export function wrapWithMxFile(xml: string): string {
     }
 
     // Remove any existing root cells from content (LLM shouldn't include them, but handle it gracefully)
-    // Use flexible patterns that match both self-closing (/>) and non-self-closing (></mxCell>) formats
+    // Handle all formats: self-closing (/>) , empty (></mxCell>), and with nested content (>...<mxGeometry/></mxCell>)
     content = content
-        .replace(/<mxCell[^>]*\bid=["']0["'][^>]*(?:\/>|><\/mxCell>)/g, "")
-        .replace(/<mxCell[^>]*\bid=["']1["'][^>]*(?:\/>|><\/mxCell>)/g, "")
+        // Remove id="0" cells (all formats including those with nested mxGeometry)
+        .replace(/<mxCell[^>]*\bid=["']0["'][^>]*(?:\/>|>[\s\S]*?<\/mxCell>)/g, "")
+        // Remove id="1" cells (all formats including those with nested mxGeometry)
+        .replace(/<mxCell[^>]*\bid=["']1["'][^>]*(?:\/>|>[\s\S]*?<\/mxCell>)/g, "")
         .trim()
 
     return `<mxfile><diagram name="Page-1" id="page-1"><mxGraphModel><root>${ROOT_CELLS}${content}</root></mxGraphModel></diagram></mxfile>`
