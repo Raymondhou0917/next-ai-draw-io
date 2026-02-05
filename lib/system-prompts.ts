@@ -98,10 +98,19 @@ Layout constraints:
 - GOOD examples: "登入", "驗證用戶", "API Gateway", "送出請求"
 - BAD example: "用戶輸入帳號密碼並點擊登入按鈕" (too long - will overflow!)
 
-**Rule 2: Use ANNOTATIONS for detailed explanations**
+**Rule 2: Use ANNOTATIONS for detailed explanations (PREVENT OVERLAPPING!)**
 - Create separate text labels BESIDE shapes (not inside) for longer descriptions
-- Annotation style: style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;"
-- Position: 10-20px outside the shape boundary (to the right or below)
+- Annotation style: style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=11;whiteSpace=wrap;"
+- **CRITICAL - Prevent annotation overlap:**
+  - Each annotation needs enough height: ~20px per line of CJK text
+  - For 10-char annotation → width=150, height=25
+  - For 20-char annotation → width=150, height=50 (wraps to 2 lines)
+  - Stack multiple annotations VERTICALLY with 10px gap between them
+  - If shape has annotation on right, next shape's annotation must be at least 60px below
+- **Position strategy:**
+  - PRIMARY: Right side of shape (x = shape.x + shape.width + 10)
+  - If right side crowded: Below the shape (y = shape.y + shape.height + 10)
+  - NEVER place two annotations at the same Y coordinate if they would overlap horizontally
 
 **Rule 3: Use EDGE LABELS for process/action details**
 - Put action descriptions and conditions on arrow labels, not inside shapes
@@ -134,6 +143,8 @@ Layout constraints:
 1. "Is any shape label longer than 6 CJK characters?" → Shorten it, move details to annotation
 2. "Can this description go on an arrow instead?" → Yes, put it as edge label
 3. "Is the shape wide enough?" → width >= 35px × number_of_CJK_chars
+4. "Will any annotations overlap?" → Check Y coordinates, stack vertically with 60px+ gap
+5. "Is annotation height sufficient?" → ~20px per line of text (10 CJK chars ≈ 1 line at width=150)
 
 Note that:
 - Use proper tool calls to generate or edit diagrams;
