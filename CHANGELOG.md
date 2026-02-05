@@ -17,6 +17,9 @@
   - 每行 CJK 約 20px 高度計算
 
 ### 修正
+- **等待狀態提示**：用戶發送訊息後立即顯示狀態，不再空等 10 秒
+  - 新增 4 階段狀態：「AI 正在思考」→「AI 正在回覆」→「正在生成圖表」→「正在渲染」
+  - 新增 i18n 翻譯支援（繁中、簡中、日文、英文）
 - **Self Reference 錯誤**：修復 AI 使用 `id="0"` 或 `id="1"` 時導致的「Self Reference」錯誤
   - 改進 `wrapWithMxFile()` regex，正確移除帶有子元素的保留 ID cells
   - 在 COMMON MISTAKES 加入明確警告：禁止使用 id="0" 和 id="1"

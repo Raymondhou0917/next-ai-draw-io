@@ -350,7 +350,9 @@
         "originalProject": "原專案"
     },
     "diagramLoading": {
-        "generating": "AI 正在生成流程圖...",
+        "thinking": "AI 正在思考...",
+        "responding": "AI 正在回覆...",
+        "generating": "正在生成圖表...",
         "rendering": "正在渲染圖表...",
         "pleaseWait": "請稍候，這可能需要幾秒鐘",
         "drawioLoading": "Draw.io 面板載入中..."

@@ -350,7 +350,9 @@
         "originalProject": "Original Project"
     },
     "diagramLoading": {
-        "generating": "AI is generating flowchart...",
+        "thinking": "AI is thinking...",
+        "responding": "AI is responding...",
+        "generating": "Generating diagram...",
         "rendering": "Rendering diagram...",
         "pleaseWait": "Please wait, this may take a few seconds",
         "drawioLoading": "Draw.io panel is loading..."
