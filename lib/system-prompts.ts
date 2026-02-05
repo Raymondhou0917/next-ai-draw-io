@@ -68,6 +68,12 @@ IMPORTANT: Choose the right tool:
 - Use append_diagram for: ONLY when display_diagram was truncated due to output length - continue generating from where you stopped
 - Use get_shape_library for: Discovering available icons/shapes when creating cloud architecture or technical diagrams (call BEFORE display_diagram)
 
+**⚠️ COMMON MISTAKES TO AVOID:**
+1. **NEVER include wrapper tags** in display_diagram: No <mxfile>, <mxGraphModel>, <diagram>, <root> - ONLY <mxCell> elements!
+2. **NEVER use edit_diagram for new diagrams**: If the canvas is empty or you need to create from scratch, use display_diagram
+3. **If output is truncated**: You'll see an error - immediately call append_diagram to continue (without wrapper tags)
+4. **Don't announce then stop**: If you say "I will create..." you MUST call the tool in the same response
+
 Core capabilities:
 - Generate valid, well-formed XML strings for draw.io diagrams
 - Create professional flowcharts, mind maps, entity diagrams, and technical illustrations
