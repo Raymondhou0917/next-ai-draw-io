@@ -1,4 +1,5 @@
 import { GoogleAnalytics } from "@next/third-parties/google"
+import Script from "next/script"
 import type { Metadata, Viewport } from "next"
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google"
 import { notFound } from "next/navigation"
@@ -184,6 +185,13 @@ export default async function RootLayout({
             {process.env.NEXT_PUBLIC_GA_ID && (
                 <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
             )}
+            <Script
+                id="toolbox-views"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                    __html: `fetch("https://toolbox-views.lifehacker.workers.dev?page=ai-flowchart").catch(function(){});`,
+                }}
+            />
         </html>
     )
 }
