@@ -23,6 +23,7 @@ import {
     replaceHistoricalToolInputs,
     validateFileParts,
 } from "@/lib/chat-helpers"
+import { consumeUsage, getClientId } from "@/lib/daily-usage-limit"
 import {
     checkAndIncrementRequest,
     isQuotaEnabled,
@@ -168,6 +169,43 @@ async function handleChatRequest(req: Request): Promise<Response> {
         }
     }
     // === CACHE CHECK END ===
+
+    // === DAILY USAGE LIMIT START ===
+    // 用站方金鑰的請求一律在伺服器端計數（lib/daily-usage-limit.ts）。
+    // 只有真的帶了自己的金鑰才不計：x-ai-api-key，或 bedrock／vertexai 的對應憑證。
+    const requestProvider = req.headers.get("x-ai-provider")
+    const bringsOwnKey = !!(
+        req.headers.get("x-ai-api-key") ||
+        (requestProvider === "bedrock" &&
+            req.headers.get("x-aws-access-key-id") &&
+            req.headers.get("x-aws-secret-access-key")) ||
+        (requestProvider === "vertexai" && req.headers.get("x-vertex-api-key"))
+    )
+    if (!bringsOwnKey) {
+        const isNewTurn = messages[messages.length - 1]?.role === "user"
+        const usage = consumeUsage(getClientId(req), isNewTurn)
+        if (!usage.allowed) {
+            return Response.json(
+                {
+                    error:
+                        usage.reason === "global"
+                            ? "Daily request limit reached for the whole site. Please try again tomorrow or use your own API key."
+                            : "Daily request limit reached. Please try again tomorrow or use your own API key.",
+                    type: "request",
+                    used:
+                        usage.reason === "global"
+                            ? usage.globalTurnsUsed
+                            : usage.turnsUsed,
+                    limit:
+                        usage.reason === "global"
+                            ? usage.globalTurnsLimit
+                            : usage.turnsLimit,
+                },
+                { status: 429 },
+            )
+        }
+    }
+    // === DAILY USAGE LIMIT END ===
 
     // Read client AI provider overrides from headers
     const provider = req.headers.get("x-ai-provider")

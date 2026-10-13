@@ -11,9 +11,8 @@ import {
 import { getApiEndpoint } from "@/lib/base-path"
 import { STORAGE_KEYS } from "@/lib/storage"
 
-// 每日免費額度限制（與後端同步）
-// Gemini 2.5 Flash 免費額度 500 次/天，設 30 次全局共享
-const DAILY_FREE_LIMIT = 30
+// 每日免費額度：每個 IP 10 次（全站另有 20 次上限），實際數字以後端 /api/global-quota 回傳為準
+const DAILY_FREE_LIMIT = 10
 
 /**
  * 格式化剩餘時間為 HH:MM:SS
@@ -90,7 +89,7 @@ const LocalQuotaContext = createContext<LocalQuotaContextValue | null>(null)
  * LocalQuotaProvider - 統一管理全局 Quota 狀態
  *
  * 功能：
- * 1. 每日 20 次**全局共享**免費額度（台北時間午夜重置）
+ * 1. 每日免費額度：每個 IP 10 次、全站 20 次（台北時間午夜重置，伺服器端 /api/chat 強制執行）
  * 2. 顯示剩餘次數和重置倒數
  * 3. 如果用戶有自己的 API Key，不受限制
  * 4. 所有使用 useLocalQuota 的組件共享同一個狀態
